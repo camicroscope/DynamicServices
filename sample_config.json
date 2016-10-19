@@ -1,0 +1,47 @@
+{
+    "orders":
+    {
+        "redis":
+        {
+            "host": "localhost",
+            "port": "6379",
+            "channel": "q:events"
+        },
+        "kue":
+        {
+            "host": "localhost",
+            "port": "1337",
+            "path": "/job/"
+        }
+    },
+    "images":
+    {
+        "location":
+        {
+            "host" : "localhost" ,
+            "port" : "9099" ,
+            "path" : "/services/TCGA/GeoJSONMetaData/query/getFileLocationByIID"
+        },
+        "imageServer":
+        {
+            "url":"localhost",
+            "format":"JPEG"
+        },
+        "api_key_file": "sample_apikey.json"
+    },        
+    "annotations":
+    {
+        "server":
+        {
+            "host": "localhost",
+            "port": "6000",
+            "path": "/submitMaskOrder"
+        },
+        "redis":
+        {
+            "host": "localhost",
+            "port": "6379",
+            "channel": "q:events"
+        }
+    }
+}
