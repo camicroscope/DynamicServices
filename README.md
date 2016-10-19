@@ -20,9 +20,9 @@ Refer to sample_config.json
 
 ###Deployment
 To run use:
-`LD_LIBRARY_PATH=/usr/local/lib64/ ./analyticalservices newconfig.json`
+`LD_LIBRARY_PATH=/usr/local/lib64/ ./analyticalservices config.json`
 To deploy use:
-`nohup LD_LIBRARY_PATH=/usr/local/lib64/ ./analyticalservices newconfig.json`
+`nohup LD_LIBRARY_PATH=/usr/local/lib64/ ./analyticalservices config.json`
 
 ###Orders
 Refer to sample_order.json
