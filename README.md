@@ -11,10 +11,12 @@ DynamicServices pulls an image ROI from an image server based on JSON orders. Th
 * `yum install jsoncpp-devel`
 * Install redox: `https://github.com/hmartiro/redox`
 
-###Compile:
+###Build:
+* `mkdir obj`
 * `make`
 
 ###Config file
+Refer to sample_config.json
 
 ###Deployment
 To run use:
@@ -23,3 +25,4 @@ To deploy use:
 `nohup LD_LIBRARY_PATH=/usr/local/lib64/ ./analyticalservices newconfig.json`
 
 ###Orders
+Refer to sample_order.json
