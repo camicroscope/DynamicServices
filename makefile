@@ -8,7 +8,7 @@ OBJDIR = obj
 #INCDIR = include
 #VPATH = $(SRCDIR) $(INCDIR)
 
-_OBJ = Order.o CaMicroscope.o main.o
+_OBJ = Order.o CaMicroscopeService.o main.o
 OBJ = $(patsubst %,$(OBJDIR)/%,$(_OBJ))
 
 all: dynamicservices
