@@ -27,13 +27,13 @@
                 "case_id": "TCGA-02-0001",
                 "height": "35558",
                 "width": "48002"
-                "source": "image_server"
+                "source": "file_system"
             },
             "metadata": {
                 "created_by": "user1",
                 "created_on": "1465592027497"
             },
-            "region":"roi",
+            "region":"full",
             "roi": {
                 "h": "141",
                 "w": "207",
