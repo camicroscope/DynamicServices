@@ -33,8 +33,10 @@
                 "created_by": "user1",
                 "created_on": "1465592027497"
             },
-            "region":"roi",
             "roi": {
+                "full":"false",
+                "square":"false",
+                "pct":"false",
                 "h": "141",
                 "w": "207",
                 "x": "23198",
