@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   Order.hpp
  * Author: amit
  *
@@ -13,6 +13,7 @@
 #include <json/reader.h>
 
 enum FORMAT {JPEG, mask, format_not_found};
+enum ROI {FULL, SQUARE, PCT, TILE};
 
 class CaMicroscopeService;
 class Order {
@@ -28,9 +29,11 @@ public:
     unsigned getHeight() const;
     unsigned getX() const;
     unsigned getY() const;
-    std::string getInputFormat() const; 
+    std::string getInputFormat() const;
     std::string getLocationIDPath() const;
     std::string getImagePath(const std::string& locPath) const;
+    std::string getImageSource() const;
+    ROI getRoiType() const;
     Order(const Json::Value& value, unsigned W, unsigned H);
     Order(const Json::Value& value, const std::string& iips, const std::string& fmat);
     Order(const Order& orig);
@@ -54,8 +57,9 @@ private:
     std::string outPort;
     std::string outPath;
     FORMAT outFormat;
+    ROI roiType;
+    std::string imageSource;
     bool processed;
 };
 
 #endif /* ORDER_HPP */
-

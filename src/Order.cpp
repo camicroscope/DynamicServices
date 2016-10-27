@@ -1,7 +1,7 @@
-/* 
+/*
  * File:   Order.cpp
  * Author: amit
- * 
+ *
  * Created on May 13, 2016, 11:51 PM
  */
 
@@ -49,7 +49,7 @@ void Order::print() const {
     //cout << "\n" << outHost;
     //cout << "\n" << outPort;
     //cout << "\n" << outPath;
-    //cout << "\n" << outFormat; 
+    //cout << "\n" << outFormat;
     cout << endl;
 }
 
@@ -61,6 +61,17 @@ Order::Order(const Json::Value& value, unsigned W, unsigned H) {
     inPort = value["input"].get("port", "").asString();
     inPath = value["input"].get("path", "").asString();
     caseId = value["input"].get("case_id", "").asString();
+    string imageSource = value["data"]["order"]["image"].get("source","").asString();//.tolower();
+    string fullImage = value["data"]["order"]["roi"].get("full", "false").asString();//.tolower();
+    string squareImage = value["data"]["order"]["roi"].get("full", "false").asString();//.tolower();
+    string pctImage = value["data"]["order"]["roi"].get("full", "false").asString();//.tolower();
+    if (fullImage == "true")
+        roiType = ROI::FULL;
+    else if (squareImage == "true")
+        roiType = ROI::SQUARE;
+    else if (pctImage == "true")
+        roiType = ROI::PCT;
+    else roiType = ROI::TILE;
     x = stoi(value["input"].get("x", "0").asString());
     y = stoi(value["input"].get("y", "0").asString());
     w = stoi(value["input"].get("w", "0").asString());
@@ -71,7 +82,7 @@ Order::Order(const Json::Value& value, unsigned W, unsigned H) {
     outHost = value["output"].get("host", "").asString();
     outPort = value["output"].get("port", "").asString();
     outPath = value["output"].get("path", "").asString();
-    processed = false; 
+    processed = false;
 }
 
 Order::Order(const Json::Value& value, const string& iips, const string& fmat) {
@@ -90,7 +101,7 @@ Order::Order(const Json::Value& value, const string& iips, const string& fmat) {
     h = stoi(value["data"]["order"]["roi"].get("h", "0").asString());
     //inFormat = stringToEnumFormat(value["input"].get("format", "format_not_found").asString());
     //outFormat = stringToEnumFormat(value["output"].get("format", "format_not_found").asString());
-    processed = false; 
+    processed = false;
 }
 
 string Order::getLocationIDPath() const {
@@ -122,6 +133,14 @@ string Order::getCaseId() const {
     return caseId;
 }
 
+string Order::getImageSource() const {
+    return imageSource;
+}
+
+ROI Order::getRoiType() const {
+    return roiType;
+}
+
 unsigned Order::getWidth() const {
     return width;
 }
@@ -151,4 +170,3 @@ Order::Order(const Order& orig) {
 
 Order::~Order() {
 }
-

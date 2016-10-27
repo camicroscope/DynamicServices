@@ -30,7 +30,7 @@ void CaMicroscopeService::init(const string& cfile) {
         cout << "\napi_key: " << orderApiKey;
         //cout << "\nPubSub: " << orderPubSubHost << ":" << stoi(orderPubSubPort) << endl;
          if (!publisher.connect(orderPubSubHost,stoi(orderPubSubPort)) || !subscriber.connect(orderPubSubHost,stoi(orderPubSubPort))) {
-        //if (!publisher.connect() || !subscriber.connect()) {   
+        //if (!publisher.connect() || !subscriber.connect()) {
             cout << "\nSomething went wrong with redis! Exiting";
             exit(1);
         }
@@ -39,7 +39,7 @@ void CaMicroscopeService::init(const string& cfile) {
             cout << "\nSomething went wrong with annotation redis! Exiting";
             exit(1);
         }
- 
+
         auto got_message = [&](const string& topic, const string & msg) {
             cout << "\n" << topic << ": " << msg << endl;
             Json::Value values;
@@ -161,17 +161,31 @@ void CaMicroscopeService::processOrderRedis() {
             }
             string loc = values[0].get("file-location", "").asString();
             cout << "\nfile-location:" << loc;
-            string imURL = order->getImagePath(loc);
-            cout << "\n\nImageURL: " << imURL;
-            string imName = order->getOrderId() + "." + order->getInputFormat();
-            getImage(imURL, imName);
-            string cmd = "/bin/sh algo1.sh " + imName + " " + order->getOrderId();
+
+            string cmd;
+            if (order->getImageSource() == "image_server") {
+              string imURL = order->getImagePath(loc);
+              cout << "\n\nImageURL: " << imURL;
+              string imName = order->getOrderId() + "." + order->getInputFormat();
+              getImage(imURL, imName);
+              cmd = "/bin/sh algo1.sh img " + imName + " " + order->getOrderId();
+            }
+            else {
+              switch (order->getRoiType()) {
+                case FULL:  cmd = "/bin/sh algo1.sh wsi " + imName + " " + order->getOrderId();
+                            break;
+                default:  cout << "\n\nROI type:" << order->getRoiType() << " isn't supported. Skipping." << endl;
+                          return;
+              }
+            }
+
+
             //cout << "\nProcess command: " << cmd;
             cout << "\nProcess command: " << "/bin/sh algo1.sh " << imName  << " " << order->getOrderId();
             int ret = system(cmd.c_str());
 
             string annotationsServerPath = postHost + ":" + postPort + postPath;
-            string postCmd = "curl -v " + annotationsServerPath + " -F mask=@" 
+            string postCmd = "curl -v " + annotationsServerPath + " -F mask=@"
                     + order->getOrderId() +
                     +"_mpp_0.25_x0_y0-seg.png" + " -F case_id=" + order->getCaseId()
                     + " -F execution_id=ganesh:algo1 -F width=" + to_string(order->getWidth())
@@ -198,7 +212,7 @@ string CaMicroscopeService::postToAnnotationServer(const string& cmd) {
         if (fgets(buffer, 128, pipe.get()) != NULL)
             result += buffer;
     }
-    cout << "\nResponse from annotation server:\n" << result << endl;           
+    cout << "\nResponse from annotation server:\n" << result << endl;
     Json::Value values;
     Json::Reader reader;
     bool parsed = reader.parse(result, values);
@@ -319,7 +333,7 @@ bool CaMicroscopeService::getJSON(const string& URL, string& jsonText) {
     string readBuffer;
     //ostringstream readBuffer;
     struct curl_slist *headers = NULL;
-    bool retFlag = false;    
+    bool retFlag = false;
     curl_slist_append(headers, "Accept: application/json");
     curl_slist_append(headers, "Content-Type: application/json");
     curl_slist_append(headers, "charsets: utf-8");
