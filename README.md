@@ -8,7 +8,7 @@ DynamicServices pulls an image ROI from an image server based on JSON orders. Th
 
 ###Dependencies:
 * `yum install curl-devel`
-* `yum install jsoncpp-devel`
+* `yum install jsoncpp-devel` or use http://ask.xmodulo.com/fix-fatal-error-jsoncpp.html
 * Install redox: `https://github.com/hmartiro/redox`
 
 ###Build:
