@@ -95,6 +95,17 @@ Order::Order(const Json::Value& value, const string& iips, const string& fmat) {
     width = stoi(value["data"]["order"]["image"].get("width", "0").asString());
     height = stoi(value["data"]["order"]["image"].get("height", "0").asString());
     caseId = value["data"]["order"]["image"].get("case_id", "").asString();
+    string imageSource = value["data"]["order"]["image"].get("source","").asString();//.tolower();
+    string fullImage = value["data"]["order"]["roi"].get("full", "false").asString();//.tolower();
+    string squareImage = value["data"]["order"]["roi"].get("full", "false").asString();//.tolower();
+    string pctImage = value["data"]["order"]["roi"].get("full", "false").asString();//.tolower();
+    if (fullImage == "true")
+        roiType = ROI::FULL;
+    else if (squareImage == "true")
+        roiType = ROI::SQUARE;
+    else if (pctImage == "true")
+        roiType = ROI::PCT;
+    else roiType = ROI::TILE;
     x = stoi(value["data"]["order"]["roi"].get("x", "0").asString());
     y = stoi(value["data"]["order"]["roi"].get("y", "0").asString());
     w = stoi(value["data"]["order"]["roi"].get("w", "0").asString());
