@@ -16,6 +16,7 @@
 #include "Order.hpp"
 #include <redox.hpp>
 #include <unordered_map>
+#include <future>
 
 class CaMicroscopeService {
 public:
@@ -30,6 +31,7 @@ private:
     std::queue<std::unique_ptr<Order>> orderQ;
     std::unordered_map<std::string, std::unique_ptr<Order>> processedOrders;
     std::mutex orderQMutex;
+    std::mutex processedOrderQMutex;
     std::string orderHost;
     std::string orderPort;
     std::string orderPath;
@@ -54,7 +56,7 @@ private:
     FORMAT format;
     std::string formatS;
     void processRedis(const std::string& jobID);
-    void processOrder();
+    void processOrder(std::unique_ptr<Order> ord);
     void processOrderRedis();
     std::string postToAnnotationServer(const std::string&);
     bool parseOrders(const std::string& jsonText);

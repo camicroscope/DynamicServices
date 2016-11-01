@@ -29,7 +29,7 @@ void CaMicroscopeService::init(const string& cfile) {
         orderApiKey = readApiKey(orderKeyFile);
         cout << "\napi_key: " << orderApiKey;
         //cout << "\nPubSub: " << orderPubSubHost << ":" << stoi(orderPubSubPort) << endl;
-         if (!publisher.connect(orderPubSubHost,stoi(orderPubSubPort)) || !subscriber.connect(orderPubSubHost,stoi(orderPubSubPort))) {
+        if (!publisher.connect(orderPubSubHost,stoi(orderPubSubPort)) || !subscriber.connect(orderPubSubHost,stoi(orderPubSubPort))) {
         //if (!publisher.connect() || !subscriber.connect()) {
             cout << "\nSomething went wrong with redis! Exiting";
             exit(1);
@@ -43,15 +43,15 @@ void CaMicroscopeService::init(const string& cfile) {
         auto got_message = [&](const string& topic, const string & msg) {
             cout << "\n" << topic << ": " << msg << endl;
             Json::Value values;
-    	    Json::Reader reader;
+            Json::Reader reader;
             bool parsed = reader.parse(msg, values);
             if (!parsed) {
-            	std::cout << "\nFailed to parse " << msg << " " << reader.getFormattedErrorMessages();
-    	    }
+                std::cout << "\nFailed to parse " << msg << " " << reader.getFormattedErrorMessages();
+            }
             else {
-		string jobID =  values.get("id", "default value").asString();
-	        cout << "\nProcessing job: " << jobID;
-	        processRedis(jobID);
+                string jobID =  values.get("id", "default value").asString();
+                cout << "\nProcessing job: " << jobID;
+                processRedis(jobID);
             }
         };
         auto got_annotation_message = [&](const string& topic, const string & msg) {
@@ -63,27 +63,27 @@ void CaMicroscopeService::init(const string& cfile) {
                 std::cout << "\nFailed to parse " << msg << " " << reader.getFormattedErrorMessages();
             }
             else {
-		string event = values.get("event", "default value").asString();
+                string event = values.get("event", "default value").asString();
                 cout << "\nEvent: " << event;
                 if (event == "complete") {
                     string jobID =  values.get("id", "default value").asString();
                     cout << "\nInside complete block; Looking for id: " << jobID <<"\n";
                     mtx.lock();
-		    auto pJob = processedOrders.find(jobID);
+                    auto pJob = processedOrders.find(jobID);
                     if (pJob != processedOrders.end()) {
                         unique_ptr<Order> order = move(pJob->second);
                         cout << "\norder id fetch: " << order->getOrderId();
                         string rcmd = "q:job:" + order->getOrderId();
                         cout << "\nJob: " << order->getOrderId() << " competed";
                         try {
-                   	     redox::Command<int>& c = publisher.commandSync<int>({"HSET", rcmd, "state", "\"complete\""});
-                	     if(!c.ok()) {
-                      	         cerr << "Error while communicating with redis" << c.status() << endl;
-                	     }
-                             c.free();
-            		} catch (runtime_error& e) {
-                	    cerr << "send_message: Exception in redox: " << e.what() << endl;
-            		}
+                            redox::Command<int>& c = publisher.commandSync<int>({"HSET", rcmd, "state", "\"complete\""});
+                            if(!c.ok()) {
+                                 cerr << "Error while communicating with redis" << c.status() << endl;
+                            }
+                            c.free();
+                        } catch (runtime_error& e) {
+                            cerr << "send_message: Exception in redox: " << e.what() << endl;
+                        }
                     }
                     mtx.unlock();
                 }
@@ -98,14 +98,14 @@ void CaMicroscopeService::init(const string& cfile) {
             cout << "\n> Unsubscribed from " << topic << endl;
         };
 
-    	cout << "\nDone setting up Redis connections" << endl;
+        cout << "\nDone setting up Redis connections" << endl;
         subscriber.subscribe("q:events", got_message, subscribed, unsubscribed);
         annotationSubscriber.subscribe("q:events", got_annotation_message, subscribed, unsubscribed);
         tProcess = std::thread(&CaMicroscopeService::processOrderRedis, this);
         //std::thread tProcess(&CaMicroscope::processOrderRedis, this);
-    	while(1) {
-	    this_thread::sleep_for(chrono::seconds(2));
-	}
+        while(1) {
+            this_thread::sleep_for(chrono::seconds(2));
+        }
     } else {
         cout << "\nExiting";
         exit(1);
@@ -134,71 +134,79 @@ void CaMicroscopeService::processOrderRedis() {
             orderQ.pop();
             orderQMutex.unlock();
             //string locP = order->getLocationIDPath() + "&api_key=" + orderApiKey;
-            string rcmd = "q:job:" + order->getOrderId();
-            try {
-                redox::Command<int>& c = publisher.commandSync<int>({"HSET", rcmd, "state", "start"});
-                if(!c.ok()) {
-                    cerr << "Error while communicating with redis" << c.status() << endl;
-                }
-                c.free();
-            } catch (runtime_error& e) {
-                cerr << "send_message: Exception in redox: " << e.what() << endl;
-            }
-            string locP = locHost + ":" + locPort + locPath + "?TCGAId=" + order->getCaseId() + "&api_key=" + orderApiKey;
-            string jsTxt;
-            cout << "\nqsize:" << orderQ.size();
-            cout << "\norder_processed:";
-            order->print();
-            cout << "\nlocationPath:" << locP;
-            getJSON(locP, jsTxt);
-            cout << "\nloc json: " << jsTxt;
-            Json::Value values;
-            Json::Reader reader;
-            bool parsed = reader.parse(jsTxt, values);
-            if (!parsed) {
-                std::cout << "\n\nFailed to parse jsonText " << reader.getFormattedErrorMessages();
-                //return false;
-            }
-            string loc = values[0].get("file-location", "").asString();
-            cout << "\nfile-location:" << loc;
-
-            string cmd;
-            if (order->getImageSource() == "image_server") {
-              string imURL = order->getImagePath(loc);
-              cout << "\n\nImageURL: " << imURL;
-              string imName = order->getOrderId() + "." + order->getInputFormat();
-              getImage(imURL, imName);
-              cmd = "/bin/sh algo1.sh img " + imName + " " + order->getOrderId();
-            }
-            else {
-              switch (order->getRoiType()) {
-                case FULL:  cmd = "/bin/sh algo1.sh wsi " + imName + " " + order->getOrderId();
-                            break;
-                default:  cout << "\n\nROI type:" << order->getRoiType() << " isn't supported. Skipping." << endl;
-                          return;
-              }
-            }
-
-
-            //cout << "\nProcess command: " << cmd;
-            cout << "\nProcess command: " << "/bin/sh algo1.sh " << imName  << " " << order->getOrderId();
-            int ret = system(cmd.c_str());
-
-            string annotationsServerPath = postHost + ":" + postPort + postPath;
-            string postCmd = "curl -v " + annotationsServerPath + " -F mask=@"
-                    + order->getOrderId() +
-                    +"_mpp_0.25_x0_y0-seg.png" + " -F case_id=" + order->getCaseId()
-                    + " -F execution_id=ganesh:algo1 -F width=" + to_string(order->getWidth())
-                    + " -F " + "height=" + to_string(order->getHeight())
-                    + " -F " + "x=" + to_string(order->getX())
-                    + " -F " + "y=" + to_string(order->getY());
-            cout << "\npost: " << postCmd <<endl;
-            //system(postCmd.c_str());
-            order->setAnnotationId(postToAnnotationServer(postCmd));
-            processedOrders.insert(std::make_pair(order->getAnnotationId(),move(order)));
+            auto fut = async(launch::async, &CaMicroscopeService::processOrder, this, move(order));
+            processOrder(move(order));
         }
         this_thread::sleep_for(chrono::seconds(2));
     }
+}
+
+void CaMicroscopeService::processOrder(unique_ptr<Order> order) {
+    string rcmd = "q:job:" + order->getOrderId();
+    try {
+        redox::Command<int>& c = publisher.commandSync<int>({"HSET", rcmd, "state", "start"});
+        if(!c.ok()) {
+            cerr << "Error while communicating with redis" << c.status() << endl;
+        }
+        c.free();
+    } catch (runtime_error& e) {
+        cerr << "send_message: Exception in redox: " << e.what() << endl;
+    }
+    string locP = locHost + ":" + locPort + locPath + "?TCGAId=" + order->getCaseId() + "&api_key=" + orderApiKey;
+    string jsTxt;
+    cout << "\nqsize:" << orderQ.size();
+    cout << "\norder_processed:";
+    order->print();
+    cout << "\nlocationPath:" << locP;
+    getJSON(locP, jsTxt);
+    cout << "\nloc json: " << jsTxt;
+    Json::Value values;
+    Json::Reader reader;
+    bool parsed = reader.parse(jsTxt, values);
+    if (!parsed) {
+        std::cout << "\n\nFailed to parse jsonText " << reader.getFormattedErrorMessages();
+        //return false;
+    }
+    string loc = values[0].get("file-location", "").asString();
+    cout << "\nfile-location:" << loc;
+
+    string cmd;
+    string imName = order->getOrderId() + "." + order->getInputFormat();
+
+    if (order->getImageSource() == "image_server") {
+      string imURL = order->getImagePath(loc);
+      cout << "\n\nImageURL: " << imURL;
+      getImage(imURL, imName);
+      cmd = "/bin/sh algo1.sh img " + imName + " " + order->getOrderId();
+    }
+    else {
+      switch (order->getRoiType()) {
+        case FULL:  cmd = "/bin/sh algo1.sh wsi " + imName + " " + order->getOrderId();
+                    break;
+        default:  cout << "\n\nROI type:" << order->getRoiType() << " isn't supported. Skipping." << endl;
+                  return;
+      }
+    }
+
+
+    //cout << "\nProcess command: " << cmd;
+    cout << "\nProcess command: " << "/bin/sh algo1.sh " << imName  << " " << order->getOrderId();
+    int ret = system(cmd.c_str());
+
+    string annotationsServerPath = postHost + ":" + postPort + postPath;
+    string postCmd = "curl -v " + annotationsServerPath + " -F mask=@"
+            + order->getOrderId() +
+            +"_mpp_0.25_x0_y0-seg.png" + " -F case_id=" + order->getCaseId()
+            + " -F execution_id=ganesh:algo1 -F width=" + to_string(order->getWidth())
+            + " -F " + "height=" + to_string(order->getHeight())
+            + " -F " + "x=" + to_string(order->getX())
+            + " -F " + "y=" + to_string(order->getY());
+    cout << "\npost: " << postCmd <<endl;
+    //system(postCmd.c_str());
+    order->setAnnotationId(postToAnnotationServer(postCmd));
+    processedOrderQMutex.lock();
+    processedOrders.insert(std::make_pair(order->getAnnotationId(),move(order)));
+    processedOrderQMutex.unlock();
 }
 
 string CaMicroscopeService::postToAnnotationServer(const string& cmd) {
