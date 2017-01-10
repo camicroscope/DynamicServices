@@ -11,6 +11,10 @@ DynamicServices pulls an image ROI from an image server based on JSON orders. Th
 * `yum install jsoncpp-devel` or use http://ask.xmodulo.com/fix-fatal-error-jsoncpp.html
 * Install redox: `https://github.com/hmartiro/redox`
 
+##### Camicroscope(Dependency)
+* Install all components of camicroscope from (https://github.com/camicroscope/Distro)
+* Install Kue(https://github.com/Automattic/kue) and redis on the host machine
+
 ###Build:
 * `mkdir obj`
 * `make`
