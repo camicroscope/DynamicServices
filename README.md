@@ -19,6 +19,11 @@ DynamicServices pulls an image ROI from an image server based on JSON orders. Th
 Refer to sample_config.json
 
 ###Deployment
+####Dependencies
+DynamicServices requires following tools installed and setup
+#####Kue (Ordering)
+#####Redis
+#####Annotation Server
 To run use:
 `LD_LIBRARY_PATH=/usr/local/lib64/ ./dynamicservices config.json`
 To deploy use:
