@@ -135,7 +135,7 @@ void CaMicroscopeService::processOrderRedis() {
             orderQMutex.unlock();
             //string locP = order->getLocationIDPath() + "&api_key=" + orderApiKey;
             auto fut = async(launch::async, &CaMicroscopeService::processOrder, this, move(order));
-            processOrder(move(order));
+            //processOrder(move(order));
         }
         this_thread::sleep_for(chrono::seconds(2));
     }
@@ -173,30 +173,45 @@ void CaMicroscopeService::processOrder(unique_ptr<Order> order) {
     string cmd;
     string imName = order->getOrderId() + "." + order->getInputFormat();
 
+    cout << "\n\nImage source: " << order->getImageSource();
+
     if (order->getImageSource() == "image_server") {
       string imURL = order->getImagePath(loc);
       cout << "\n\nImageURL: " << imURL;
-      getImage(imURL, imName);
-      cmd = "/bin/sh algo1.sh img " + imName + " " + order->getOrderId();
+      getImage(imURL, ("images/" + imName));
+      cmd = "/bin/sh algo1.sh images images img " + imName + " " + order->getOrderId();
     }
     else {
-      switch (order->getRoiType()) {
-        case FULL:  cmd = "/bin/sh algo1.sh wsi " + imName + " " + order->getOrderId();
+        size_t found = loc.find_last_of("//");
+        cout << " path: " << loc.substr(0,found) << '\n';
+        cout << " file: " << loc.substr(found+1) << '\n';
+        string ipath = loc.substr(0,found);
+        string ifile = loc.substr(found+1);
+      
+        switch (order->getRoiType()) {
+         case FULL:  cmd = "/bin/sh algo1.sh " + ipath + " images wsi " + ifile + " " + order->getOrderId();
                     break;
-        default:  cout << "\n\nROI type:" << order->getRoiType() << " isn't supported. Skipping." << endl;
+
+         case TILE:  cmd = "/bin/sh algo1.sh " + ipath + " images onetile " + ifile + " " + order->getOrderId() 
+			+ " " + to_string(order->getX())
+			+ " " + to_string(order->getY())
+			+ " " + to_string(order->getW())
+			+ " " + to_string(order->getH());
+                    break;
+         default:  cout << "\n\nROI type:" << order->getRoiType() << " isn't supported. Skipping." << endl;
                   return;
       }
     }
 
 
-    //cout << "\nProcess command: " << cmd;
-    cout << "\nProcess command: " << "/bin/sh algo1.sh " << imName  << " " << order->getOrderId();
+    cout << "\nProcess command: " << cmd;
+    //cout << "\nProcess command: " << "/bin/sh algo1.sh " << imName  << " " << order->getOrderId();
     int ret = system(cmd.c_str());
 
     string annotationsServerPath = postHost + ":" + postPort + postPath;
     string postCmd = "curl -v " + annotationsServerPath + " -F mask=@"
-            + order->getOrderId() +
-            +"_mpp_0.25_x0_y0-seg.png" + " -F case_id=" + order->getCaseId()
+            + "$(echo $(ls images/" + order->getOrderId() +
+            +"_mpp_*-seg.png))" + " -F case_id=" + order->getCaseId()
             + " -F execution_id=ganesh:algo1 -F width=" + to_string(order->getWidth())
             + " -F " + "height=" + to_string(order->getHeight())
             + " -F " + "x=" + to_string(order->getX())

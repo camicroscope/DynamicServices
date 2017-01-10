@@ -46,6 +46,7 @@ void Order::print() const {
     cout << "\n" << h;
     cout << "\n" << enumToStringFormat(inFormat);
     cout << "\n" << iipServer;
+    cout << "\n" << imageSource;
     //cout << "\n" << outHost;
     //cout << "\n" << outPort;
     //cout << "\n" << outPath;
@@ -61,7 +62,7 @@ Order::Order(const Json::Value& value, unsigned W, unsigned H) {
     inPort = value["input"].get("port", "").asString();
     inPath = value["input"].get("path", "").asString();
     caseId = value["input"].get("case_id", "").asString();
-    string imageSource = value["data"]["order"]["image"].get("source","").asString();//.tolower();
+    imageSource = value["data"]["order"]["image"].get("source","image_server").asString();//.tolower();
     string fullImage = value["data"]["order"]["roi"].get("full", "false").asString();//.tolower();
     string squareImage = value["data"]["order"]["roi"].get("full", "false").asString();//.tolower();
     string pctImage = value["data"]["order"]["roi"].get("full", "false").asString();//.tolower();
@@ -95,7 +96,7 @@ Order::Order(const Json::Value& value, const string& iips, const string& fmat) {
     width = stoi(value["data"]["order"]["image"].get("width", "0").asString());
     height = stoi(value["data"]["order"]["image"].get("height", "0").asString());
     caseId = value["data"]["order"]["image"].get("case_id", "").asString();
-    string imageSource = value["data"]["order"]["image"].get("source","").asString();//.tolower();
+    imageSource = value["data"]["order"]["image"].get("source","image_server").asString();//.tolower();
     string fullImage = value["data"]["order"]["roi"].get("full", "false").asString();//.tolower();
     string squareImage = value["data"]["order"]["roi"].get("full", "false").asString();//.tolower();
     string pctImage = value["data"]["order"]["roi"].get("full", "false").asString();//.tolower();
@@ -158,6 +159,14 @@ unsigned Order::getWidth() const {
 
 unsigned Order::getHeight() const {
     return height;
+}
+
+unsigned Order::getW() const {
+    return w;
+}
+
+unsigned Order::getH() const {
+    return h;
 }
 
 unsigned Order::getX() const {

@@ -29,6 +29,8 @@ public:
     unsigned getHeight() const;
     unsigned getX() const;
     unsigned getY() const;
+    unsigned getW() const;
+    unsigned getH() const;
     std::string getInputFormat() const;
     std::string getLocationIDPath() const;
     std::string getImagePath(const std::string& locPath) const;
