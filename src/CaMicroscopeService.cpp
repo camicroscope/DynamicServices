@@ -222,6 +222,15 @@ void CaMicroscopeService::processOrder(unique_ptr<Order> order) {
     processedOrderQMutex.lock();
     processedOrders.insert(std::make_pair(order->getAnnotationId(),move(order)));
     processedOrderQMutex.unlock();
+    try {
+        redox::Command<int>& c = publisher.commandSync<int>({"HSET", rcmd, "state", "complete"});
+        if(!c.ok()) {
+            cerr << "Error while communicating with redis" << c.status() << endl;
+        }
+        c.free();
+    } catch (runtime_error& e) {
+        cerr << "send_message: Exception in redox: " << e.what() << endl;
+    }
 }
 
 string CaMicroscopeService::postToAnnotationServer(const string& cmd) {
