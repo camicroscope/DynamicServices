@@ -8,7 +8,7 @@
     "data": {
         "algorithm": "SuperSegmenter",
         "created_by": "user1",
-        "execution_id": "",
+        "execution_id": "test:1:2:3",
         "notes": "",
         "order": {
             "execution": {
@@ -16,15 +16,16 @@
                 "execution_id": "",
                 "parameters": [
                     {
-                        "blur": "0.4"
+                        "r": 0.9
                     },
                     {
-                        "format": "jpg"
+                        "w": 0.84
                     }
                 ]
             },
             "image": {
                 "case_id": "TCGA-02-0001",
+                "subject_id": "TCGA-02-0001",
                 "height": "35558",
                 "width": "48002"
                 "source": "image_server"
