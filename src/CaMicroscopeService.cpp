@@ -179,7 +179,7 @@ void CaMicroscopeService::processOrder(unique_ptr<Order> order) {
       string imURL = order->getImagePath(loc);
       cout << "\n\nImageURL: " << imURL;
       string outDir = "images/" + order->getOrderId();
-      cmd = "mkdir " outDir;
+      cmd = "mkdir " + outDir;
       int ret = system(cmd.c_str());
       getImage(imURL, (outDir + "/" + imName));
       //cmd = "/bin/sh algo1.sh images images img " + imName + " " + order->getOrderId();
