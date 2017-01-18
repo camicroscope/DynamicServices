@@ -172,13 +172,13 @@ void CaMicroscopeService::processOrder(unique_ptr<Order> order) {
 
     string cmd;
     string imName = order->getOrderId() + "." + order->getInputFormat();
+    string outDir = "images/" + order->getOrderId();
 
     cout << "\n\nImage source: " << order->getImageSource();
 
     if (order->getImageSource() == "image_server") {
       string imURL = order->getImagePath(loc);
       cout << "\n\nImageURL: " << imURL;
-      string outDir = "images/" + order->getOrderId();
       cmd = "mkdir " + outDir;
       int ret = system(cmd.c_str());
       getImage(imURL, (outDir + "/" + imName));
