@@ -47,6 +47,10 @@ void Order::print() const {
     cout << "\n" << enumToStringFormat(inFormat);
     cout << "\n" << iipServer;
     cout << "\n" << imageSource;
+    cout << "\nArgs:";
+    for(auto kv:auxArgs){
+        cout << " -" << kv.first << " " << kv.second;
+    }
     //cout << "\n" << outHost;
     //cout << "\n" << outPort;
     //cout << "\n" << outPath;
@@ -93,9 +97,17 @@ Order::Order(const Json::Value& value, const string& iips, const string& fmat) {
     iipServer = iips;
     inFormat = stringToEnumFormat(fmat);
     id = value.get("id", "").asString();
+    analysisId = value["data"].get("execution_id", "").asString();
+    auto params = value["data"]["order"]["parameters"];
+    for(Json::Value::iterator it = params.begin(); it !=params.end(); ++it) {
+        Json::Value ky = it.key();
+        Json::Value val = (*it);
+        auxArgs.push_back(make_pair<string,string>(ky.asString(), val.asString()));
+    }
     width = stoi(value["data"]["order"]["image"].get("width", "0").asString());
     height = stoi(value["data"]["order"]["image"].get("height", "0").asString());
     caseId = value["data"]["order"]["image"].get("case_id", "").asString();
+    subjectId = value["data"]["order"]["image"].get("subject_id", "").asString();
     imageSource = value["data"]["order"]["image"].get("source","image_server").asString();//.tolower();
     string fullImage = value["data"]["order"]["roi"].get("full", "false").asString();//.tolower();
     string squareImage = value["data"]["order"]["roi"].get("full", "false").asString();//.tolower();
@@ -145,6 +157,14 @@ string Order::getCaseId() const {
     return caseId;
 }
 
+string Order::getSubjectId() const {
+    return subjectId;
+}
+
+string Order::getAnalysisId() const {
+    return analysisId;
+}
+
 string Order::getImageSource() const {
     return imageSource;
 }
@@ -175,6 +195,14 @@ unsigned Order::getX() const {
 
 unsigned Order::getY() const {
     return y;
+}
+
+unsigned Order::getNumAuxArgs() const {
+    return auxArgs.size();
+}
+
+pair<string,string> Order::getAuxArg(unsigned i) const {
+    return auxArgs[i];
 }
 
 bool Order::isProcessed() const {

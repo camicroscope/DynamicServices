@@ -179,10 +179,22 @@ void CaMicroscopeService::processOrder(unique_ptr<Order> order) {
       string imURL = order->getImagePath(loc);
       cout << "\n\nImageURL: " << imURL;
       getImage(imURL, ("images/" + imName));
-      cmd = "/bin/sh algo1.sh images images img " + imName + " " + order->getOrderId();
+      //cmd = "/bin/sh algo1.sh images images img " + imName + " " + order->getOrderId();
+      cmd = "mkdir /tmp/" + order->getOrderId() + " && mainSegmentFeatures -i /images/" + imName 
+		+ "-z /tmp/" + order->getOrderId() + "/output.zip -o /tmp/" + order->getOrderId() 
+		+ "-t img -c " + order->getCaseId() + " -p " + order->getSubjectId() 
+		+ " -a " + order->getAnalysisId() + " -s " + to_string(order->getX()) + "," 
+                + to_string(order->getY())  
+		+ " -b " + to_string(order->getW()) + "," + to_string(order->getH())  
+		+ " -d " + to_string(order->getW()) + "," + to_string(order->getH());
+      for (auto i=0;i<order->getNumAuxArgs();i++) {
+	cmd = cmd + " -" + order->getAuxArg(i).first
+		+ " " + order->getAuxArg(i).second;
+      }
     }
     else {
-        size_t found = loc.find_last_of("//");
+	cout << "\nOnly source:image_server supported currently" <<endl; 
+/*        size_t found = loc.find_last_of("//");
         cout << " path: " << loc.substr(0,found) << '\n';
         cout << " file: " << loc.substr(found+1) << '\n';
         string ipath = loc.substr(0,found);
@@ -200,7 +212,7 @@ void CaMicroscopeService::processOrder(unique_ptr<Order> order) {
                     break;
          default:  cout << "\n\nROI type:" << order->getRoiType() << " isn't supported. Skipping." << endl;
                   return;
-      }
+      }*/
     }
 
 
@@ -209,32 +221,45 @@ void CaMicroscopeService::processOrder(unique_ptr<Order> order) {
     int ret = system(cmd.c_str());
 
     string annotationsServerPath = postHost + ":" + postPort + postPath;
-    string postCmd = "curl -v " + annotationsServerPath + " -F mask=@"
+    string postCmd = "curl -X POST -F " + order->getCaseId() + "=xyz -F zip=@"
+		+ "/tmp/" + order->getOrderId() + "/output.zip" 
+                + annotationsServerPath + "/submitZipOrder";
+    /*string postCmd = "curl -v " + annotationsServerPath + " -F mask=@"
             + "$(echo $(ls images/" + order->getOrderId() +
             +"_mpp_*-seg.png))" + " -F case_id=" + order->getCaseId()
             + " -F execution_id=ganesh:algo1 -F width=" + to_string(order->getWidth())
             + " -F " + "height=" + to_string(order->getHeight())
             + " -F " + "x=" + to_string(order->getX())
             + " -F " + "y=" + to_string(order->getY());
+    */
     cout << "\npost: " << postCmd <<endl;
     //system(postCmd.c_str());
-    order->setAnnotationId(postToAnnotationServer(postCmd));
+    string annId = postToAnnotationServer(postCmd);
+    order->setAnnotationId(annId);
     processedOrderQMutex.lock();
     processedOrders.insert(std::make_pair(order->getAnnotationId(),move(order)));
     processedOrderQMutex.unlock();
     try {
-        redox::Command<int>& c = publisher.commandSync<int>({"HSET", rcmd, "state", "complete"});
-        if(!c.ok()) {
-            cerr << "Error while communicating with redis" << c.status() << endl;
+        if(!ret && annId!="") {
+            redox::Command<int>& c = publisher.commandSync<int>({"HSET", rcmd, "state", "complete"});
+            if(!c.ok()) {
+                cerr << "Error while communicating with redis" << c.status() << endl;
+            }
+            c.free();
+        } else {
+            redox::Command<int>& c = publisher.commandSync<int>({"HSET", rcmd, "state", "failed"});
+            if(!c.ok()) {
+                cerr << "Error while communicating with redis" << c.status() << endl;
+            }
+            c.free();
         }
-        c.free();
     } catch (runtime_error& e) {
         cerr << "send_message: Exception in redox: " << e.what() << endl;
     }
 }
 
 string CaMicroscopeService::postToAnnotationServer(const string& cmd) {
-    string jobID;
+    string jobID="";
     char buffer[128];
     std::string result = "";
     cout << "\ncommand:" << cmd.c_str();

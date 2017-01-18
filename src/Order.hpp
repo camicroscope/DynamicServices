@@ -25,6 +25,8 @@ public:
     std::string getAnnotationId() const;
     void setAnnotationId(const std::string& annId);
     std::string getCaseId() const;
+    std::string getSubjectId() const;
+    std::string getAnalysisId() const;
     unsigned getWidth() const;
     unsigned getHeight() const;
     unsigned getX() const;
@@ -36,6 +38,8 @@ public:
     std::string getImagePath(const std::string& locPath) const;
     std::string getImageSource() const;
     ROI getRoiType() const;
+    unsigned getNumAuxArgs() const;
+    std::pair<std::string,std::string> getAuxArg(unsigned) const;
     Order(const Json::Value& value, unsigned W, unsigned H);
     Order(const Json::Value& value, const std::string& iips, const std::string& fmat);
     Order(const Order& orig);
@@ -46,6 +50,8 @@ private:
     std::string inPort;
     std::string inPath;
     std::string caseId;
+    std::string subjectId;
+    std::string analysisId;
     std::string annotationId;
     unsigned x;
     unsigned y;
@@ -62,6 +68,7 @@ private:
     ROI roiType;
     std::string imageSource;
     bool processed;
+    std::vector<std::pair<std::string,std::string>> auxArgs;
 };
 
 #endif /* ORDER_HPP */
