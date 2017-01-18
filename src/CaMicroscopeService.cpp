@@ -226,7 +226,7 @@ void CaMicroscopeService::processOrder(unique_ptr<Order> order) {
     string annotationsServerPath = postHost + ":" + postPort + postPath;
     string postCmd = "curl -X POST -F " + order->getCaseId() + "=xyz -F zip=@"
 		+ outDir + "/output.zip " 
-                + annotationsServerPath + "/submitZipOrder";
+                + annotationsServerPath;
     /*string postCmd = "curl -v " + annotationsServerPath + " -F mask=@"
             + "$(echo $(ls images/" + order->getOrderId() +
             +"_mpp_*-seg.png))" + " -F case_id=" + order->getCaseId()
