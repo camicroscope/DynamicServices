@@ -178,11 +178,14 @@ void CaMicroscopeService::processOrder(unique_ptr<Order> order) {
     if (order->getImageSource() == "image_server") {
       string imURL = order->getImagePath(loc);
       cout << "\n\nImageURL: " << imURL;
-      getImage(imURL, ("images/" + imName));
+      string outDir = "images/" + order->getOrderId();
+      cmd = "mkdir " outDir;
+      int ret = system(cmd.c_str());
+      getImage(imURL, (outDir + "/" + imName));
       //cmd = "/bin/sh algo1.sh images images img " + imName + " " + order->getOrderId();
-      cmd = "mkdir /tmp/" + order->getOrderId() + " && mainSegmentFeatures -i /images/" + imName 
-		+ "-z /tmp/" + order->getOrderId() + "/output.zip -o /tmp/" + order->getOrderId() 
-		+ "-t img -c " + order->getCaseId() + " -p " + order->getSubjectId() 
+      cmd = "mainSegmentFeatures -i /images/" + imName 
+		+ " -z " + outDir + "/output.zip -o " outDir +
+		+ " -t img -c " + order->getCaseId() + " -p " + order->getSubjectId() 
 		+ " -a " + order->getAnalysisId() + " -s " + to_string(order->getX()) + "," 
                 + to_string(order->getY())  
 		+ " -b " + to_string(order->getW()) + "," + to_string(order->getH())  
@@ -222,7 +225,7 @@ void CaMicroscopeService::processOrder(unique_ptr<Order> order) {
 
     string annotationsServerPath = postHost + ":" + postPort + postPath;
     string postCmd = "curl -X POST -F " + order->getCaseId() + "=xyz -F zip=@"
-		+ "/tmp/" + order->getOrderId() + "/output.zip" 
+		+ "/tmp/" + order->getOrderId() + "/output.zip " 
                 + annotationsServerPath + "/submitZipOrder";
     /*string postCmd = "curl -v " + annotationsServerPath + " -F mask=@"
             + "$(echo $(ls images/" + order->getOrderId() +

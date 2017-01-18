@@ -133,7 +133,7 @@ string Order::getLocationIDPath() const {
 }
 
 string Order::getImagePath(const string& locPath) const {
-    return (iipServer + "?IIIF=" + locPath + "/" + to_string(x) + ","
+    return (iipServer + locPath + "/" + to_string(x) + ","
             + to_string(y) + "," + to_string(w) + "," + to_string(h) + "/full/0/default.jpg");
 }
 
