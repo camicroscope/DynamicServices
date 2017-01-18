@@ -184,7 +184,7 @@ void CaMicroscopeService::processOrder(unique_ptr<Order> order) {
       getImage(imURL, (outDir + "/" + imName));
       //cmd = "/bin/sh algo1.sh images images img " + imName + " " + order->getOrderId();
       cmd = "mainSegmentFeatures -i /images/" + imName 
-		+ " -z " + outDir + "/output.zip -o " outDir +
+		+ " -z " + outDir + "/output.zip -o " + outDir +
 		+ " -t img -c " + order->getCaseId() + " -p " + order->getSubjectId() 
 		+ " -a " + order->getAnalysisId() + " -s " + to_string(order->getX()) + "," 
                 + to_string(order->getY())  
