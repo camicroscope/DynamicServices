@@ -224,7 +224,7 @@ void CaMicroscopeService::processOrder(unique_ptr<Order> order) {
     int ret = system(cmd.c_str());
 
     string annotationsServerPath = postHost + ":" + postPort + postPath;
-    string postCmd = "curl -X POST -F " + order->getCaseId() + "=xyz -F zip=@"
+    string postCmd = "curl -X POST -F case_id=" + order->getCaseId() + " -F zip=@"
 		+ outDir + "/output.zip " 
                 + annotationsServerPath;
     /*string postCmd = "curl -v " + annotationsServerPath + " -F mask=@"
