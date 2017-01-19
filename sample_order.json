@@ -27,7 +27,7 @@
                 "case_id": "TCGA-02-0001",
                 "subject_id": "TCGA-02-0001",
                 "height": "35558",
-                "width": "48002"
+                "width": "48002",
                 "source": "image_server"
             },
             "metadata": {
