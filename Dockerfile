@@ -26,8 +26,8 @@ RUN git clone https://github.com/camicroscope/DynamicServices.git && \
     mkdir configs && \ 
     mkdir obj && make -j4 
 
-WORKDIR /tmp/
+WORKDIR /tmp/DynamicServices/
 
 ENV LD_LIBRARY_PATH=/usr/local/lib:/usr/local/lib64:$LD_LIBRARY_PATH
 
-CMD ["/bin/bash", "run.sh"]
+CMD ["/bin/bash", "/tmp/DynamicServices/run.sh"]
