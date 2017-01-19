@@ -35,5 +35,10 @@ To run use:
 To deploy using nohup:
 `LD_LIBRARY_PATH=/usr/local/lib64/ nohup ./dynamicservices config.json > dynamicservices.log &`
 
-###Orders
-Refer to sample_order.json
+##### Deployment inside an algorithm docker container
+To deploy inside an algorithm docker container. Take alogorithm image as base and use the given Dockerfile to build a new image with DynamicServices installed inside it. The given Dockerfile uses `sbubmi/test_segmentation:latest` as the base image.
+
+* Build the docker image `docker build -t dynamic_services_segmentation .`
+* Create a new directory (let's call it `configs`)
+* Update and place `config.json` & `api_key.json` inside `configs`
+* 
