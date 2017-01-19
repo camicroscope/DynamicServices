@@ -1,8 +1,8 @@
 # Makefile for dynamicservices* 
 
 CC = g++
-#CFLAGS = -O3 -O2 -std=c++11 -ljsoncpp -lcurl -lredox -lev -lhiredis
-CFLAGS = -g -std=c++11 -ljsoncpp -lcurl -lredox -lev -lhiredis
+CFLAGS = -O3 -O2 -std=c++11 -ljsoncpp -lcurl -lredox -lev -lhiredis
+#CFLAGS = -g -std=c++11 -ljsoncpp -lcurl -lredox -lev -lhiredis
 SRCDIR = src
 OBJDIR = obj
 #INCDIR = include

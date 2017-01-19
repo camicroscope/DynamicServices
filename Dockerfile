@@ -22,6 +22,8 @@ WORKDIR /tmp/
 
 RUN git clone https://github.com/camicroscope/DynamicServices.git && \
     cd DynamicServices/ && \
+    mkdir images && \
+    mkdir configs && \ 
     mkdir obj && make -j4 
 
 WORKDIR /tmp/
