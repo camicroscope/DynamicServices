@@ -41,4 +41,7 @@ To deploy inside an algorithm docker container. Take alogorithm image as base an
 * Build the docker image `docker build -t dynamic_services_segmentation .`
 * Create a new directory (let's call it `configs`)
 * Update and place `config.json` & `api_key.json` inside `configs`
-* 
+* Run the container using `docker run --net="host" -itd -v /opt/DynamicServices/configs:/tmp/DynamicServices/configs dynamic_services_segmentation`
+* Make sure that all the entries in config.json are updated. `"api_key_file"` should have the complete path inside the docker container.
+* To check the log of DynamicServices use `tail -f configs/dynamicservices.log`
+
