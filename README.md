@@ -45,3 +45,5 @@ To deploy inside an algorithm docker container. Take alogorithm image as base an
 * Make sure that all the entries in config.json are updated. `"api_key_file"` should have the complete path inside the docker container.
 * To check the log of DynamicServices use `tail -f configs/dynamicservices.log`
 
+###Algorithm execution pipeline
+As soon as DynamicServices gets a notification about a new job on orders' Redis, it fetces the order from Kue for that job id. The order json is used to extract the case_id, subject_id and ROI information along with other algorithm parameters. DynamicServices then fetches the ROI using an image service and runs the algorithm on the tile with all the paramaters. The resultant zip file is then posted to the annotations server.
