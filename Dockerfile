@@ -20,7 +20,7 @@ RUN git clone https://github.com/hmartiro/redox.git && \
 
 WORKDIR /tmp/
 
-RUN git clone https://github.com/camicroscope/DynamicServices.git && \
+RUN git clone -b quip-distro https://github.com/camicroscope/DynamicServices.git && \
     cd DynamicServices/ && \
     mkdir images && \
     mkdir configs && \ 
