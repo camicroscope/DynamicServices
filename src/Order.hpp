@@ -43,6 +43,13 @@ public:
     Order(const Json::Value& value, unsigned W, unsigned H);
     Order(const Json::Value& value, const std::string& iips, const std::string& fmat);
     Order(const Order& orig);
+	std::string getParamR() const;
+	std::string getParamW() const;
+	std::string getParamL() const;
+	std::string getParamU() const;
+	std::string getParamK() const;
+	std::string getParamJ() const;
+	std::string getParamM() const;
     virtual ~Order();
 private:
     std::string id;
@@ -68,7 +75,14 @@ private:
     ROI roiType;
     std::string imageSource;
     bool processed;
-    std::vector<std::pair<std::string,std::string>> auxArgs;
+    std::vector<std::pair<std::string,std::string>> auxArgs;	
+	std::string pr;
+	std::string pw;
+	std::string pl;
+	std::string pu;
+	std::string pk;		
+	std::string pj;
+	std::string pm;
 };
 
 #endif /* ORDER_HPP */

@@ -123,9 +123,39 @@ Order::Order(const Json::Value& value, const string& iips, const string& fmat) {
     y = stoi(value["data"]["order"]["roi"].get("y", "0").asString());
     w = stoi(value["data"]["order"]["roi"].get("w", "0").asString());
     h = stoi(value["data"]["order"]["roi"].get("h", "0").asString());
+
+	pr = value["data"]["order"].get("pr", "1").asString();
+	pw = value["data"]["order"].get("pw", "1").asString();
+	pl = value["data"]["order"].get("pl", "1").asString();
+	pu = value["data"]["order"].get("pu", "1").asString();
+	pk = value["data"]["order"].get("pk", "1").asString();
+	pj = value["data"]["order"].get("pj", "N").asString();
+	pm = value["data"]["order"].get("pm", "0.25").asString();
     //inFormat = stringToEnumFormat(value["input"].get("format", "format_not_found").asString());
     //outFormat = stringToEnumFormat(value["output"].get("format", "format_not_found").asString());
     processed = false;
+}
+
+string Order::getParamR() const{
+	return pr;
+}
+string Order::getParamW() const{
+	return pw;
+}
+string Order::getParamL() const{
+	return pl;
+}
+string Order::getParamU() const{
+	return pu;
+}
+string Order::getParamK() const{
+	return pk;
+}
+string Order::getParamJ() const{
+	return pj;
+}
+string Order::getParamM() const{
+	return pm;
 }
 
 string Order::getLocationIDPath() const {
