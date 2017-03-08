@@ -8,5 +8,5 @@ DynamicServices pulls an image ROI from an image server based on JSON orders. Th
 
 ###Dependencies:
 
-`npm install`
-`node worker.js`
+* `npm install`
+* `node worker.js`
