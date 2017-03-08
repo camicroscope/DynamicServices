@@ -33,7 +33,7 @@ var config = {
     {
         "server":
         {
-            "host": "172.17.0.3",
+            "host": "172.18.0.3",
             "port": "3001",
             "path": "/submitZipOrder"
         },
@@ -82,7 +82,14 @@ var runSegmentation = function(jobId, imageFilePath, order, done, callback){
 					+ " -t img -c " + order.image.case_id + " -p " + order.image.case_id 
 					+ " -a " + order.execution.algorithm + " -s " + order.roi.x + "," + order.roi.y 
 					+ " -b " + order.roi.w + ","+ order.roi.h 
-					+ " -d " + order.roi.w + "," + order.roi.h;
+					+ " -d " + order.roi.w + "," + order.roi.h
+                    + " -r " + order.pr
+                    + " -w " + order.pw
+                    + " -l " + order.pl
+                    + " -u " + order.pu
+                    + " -k " + order.pk
+                    + " -j " + order.pj
+
 	try{	
 		console.log("Executing: ");
 		console.log(command);
@@ -109,14 +116,20 @@ var runSegmentation = function(jobId, imageFilePath, order, done, callback){
 
 
 var uploadAnnotations = function(jobId, order, done){
-		console.log("Uploading annotation");
-		console.log(jobId);
-		var annotationLoader = config.annotations.server.host + ":"+ config.annotations.server.port + config.annotations.server.path;
-
-		superagent.post(annotationLoader).attach("zip", IMG_DIR+jobId+"/output.zip").field("case_id", order.image.case_id).end(function(){ 
+	console.log("Uploading annotation");
+	console.log(jobId);
+    var annotationLoader = config.annotations.server.host + ":"+ config.annotations.server.port + config.annotations.server.path;
+    console.log(annotationLoader);
+	superagent.post(annotationLoader).attach("zip", IMG_DIR+jobId+"/output.zip").field("case_id", order.image.case_id).end(function(err,res){ 
+        if(err){
+            console.log(err);
+        }
+        console.log(res.body);
+        var annotationJobId = res.body.Job.id;
+        console.log("Id: "+annotationJobId);
 		console.log("Uploaded annotation");
 		done();
-		});
+	});
 
 }
 	
