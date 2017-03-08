@@ -1,18 +1,9 @@
-var kue = require('kue'),
-    queue = kue.createQueue();
-var http = require('http');
-var superagent = require('superagent');
-var fs = require("fs");
-var server = http.createServer(function(request, response){
-    response.end("Hello");
-});
-
 var config = {
     "orders":
     {
         "redis":
         {
-            "host": "172.17.0.5",
+            "host": "172.18.0.6",
             "port": "6379",
             "channel": "q:events"
         },
@@ -55,17 +46,86 @@ var config = {
     }
 };
 
+var exec = require("child_process").exec;
+var async = require("async");
+var kue = require('kue'),
+    queue = kue.createQueue({
+		redis: {
+			host: config.orders.redis.host
+		}
+	});
+var http = require('http');
+var superagent = require('superagent');
+var fs = require("fs");
+var server = http.createServer(function(request, response){
+    response.end("Hello");
+});
+
+var IMG_DIR = "images/";
+
+
+var processImage = function(getImageFileURL, jobId, imageFilePath, order, done, callback){
+
+    var roi = order.roi;
+    var imageFile = fs.createWriteStream(imageFilePath);
+	var imgReq = http.get(getImageFileURL, function(response){
+		response.pipe(imageFile);
+		callback(jobId, imageFilePath, order, done);
+    });
+}
+
+var runSegmentation = function(jobId, imageFilePath, order, done, callback){
+  
+	var dir = IMG_DIR + jobId + "/";
+	var command = "mainSegmentFeatures -i " + imageFilePath 
+					+ " -z " + dir  + "output.zip -o " + dir 
+					+ " -t img -c " + order.image.case_id + " -p " + order.image.case_id 
+					+ " -a " + order.execution.algorithm + " -s " + order.roi.x + "," + order.roi.y 
+					+ " -b " + order.roi.w + ","+ order.roi.h 
+					+ " -d " + order.roi.w + "," + order.roi.h;
+	try{	
+		console.log("Executing: ");
+		console.log(command);
+
+		exec(command, function(err, stdout, stderr){
+			if(err){
+				console.log("Error: "+err);
+				done(err);
+			}
+			if(stderr){
+				console.log("Error: "+err);
+				done(err);
+			}
+			console.log(stdout);
+								
+		    uploadAnnotations(jobId, order, done);
+		});	
+	} catch(e) {
+		console.log("Error! "+e);
+		done(e);
+			
+	}	
+};
+
+
+var uploadAnnotations = function(jobId, order, done){
+		console.log("Uploading annotation");
+		console.log(jobId);
+		var annotationLoader = config.annotations.server.host + ":"+ config.annotations.server.port + config.annotations.server.path;
+
+		superagent.post(annotationLoader).attach("zip", IMG_DIR+jobId+"/output.zip").field("case_id", order.image.case_id).end(function(){ 
+		console.log("Uploaded annotation");
+		done();
+		});
+
+}
+	
+
 
 queue.process("analysisJob", function(job, done){
     console.log(job.id);
     var order = job.data.order;
-
     console.log(order);
-
-
-    //http.get("")
-    //get image path
-    //var getImagePath = order.images.host + ":" + order.images.port + order.images.path;
     var getImagePath = config.images.location.host + ":" + config.images.location.port + config.images.location.path + "?TCGAId="+order.image.case_id;
     console.log(getImagePath);
     superagent.get(getImagePath).end(function(err, res){
@@ -77,38 +137,16 @@ queue.process("analysisJob", function(job, done){
         var fileLocation = (res.body[0]["file-location"]);
         
         var roi = order.roi;
-        var imageFile = fs.createWriteStream(job.id+".jpg");
 
+		var dir = IMG_DIR + "/"+job.id;
+		fs.mkdirSync(dir); 
 
-        //ttp://localhost/data/myImages/imageDir2/image1.svs/8000,9000,400,400/full/0/default.jp
-        var getImageFile = "http://"+config.images.imageServer.url +fileLocation + "/"+ parseInt(roi.x)+","+parseInt(roi.y)+","+parseInt(roi.w) + "," + parseInt(roi.h) +"/full/0/default.jpg";
+		var imageFilePath = dir + "/"+ job.id+".jpg";
+        var getImageFile = "http://" + config.images.imageServer.url + fileLocation + "/"+ parseInt(roi.x)+","+parseInt(roi.y)+","+parseInt(roi.w) + "," + parseInt(roi.h) +"/full/0/default.jpg";
         console.log(getImageFile);
-        var imgReq = http.get(getImageFile, function(response){
-            response.pipe(imageFile);
+		processImage(getImageFile, job.id, imageFilePath, order, done, runSegmentation);
 
-
-            
-
-            done();
-        });
-
-
-        /*
-        superagent.get(getImageFile).end(function(err2, res2){
-            if(err2){
-                console.log("Error: "+err2);
-                done(err2);
-            }
-            console.log(res2.statusCode)
-            done(); 
-        });
-        */
     });
-    //Fetch image
-
-    //Run container
-    //Upload annotations
-
 
 
 });
