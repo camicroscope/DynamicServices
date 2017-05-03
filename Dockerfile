@@ -30,4 +30,7 @@ WORKDIR /tmp/DynamicServices/
 
 ENV LD_LIBRARY_PATH=/usr/local/lib:/usr/local/lib64:$LD_LIBRARY_PATH
 
+COPY trusted-app-client-0.0.1-jar-with-dependencies.jar /tmp/DynamicServices/
+COPY createUser.py /tmp/DynamicServices/
+
 CMD ["/bin/bash", "/tmp/DynamicServices/run.sh"]
