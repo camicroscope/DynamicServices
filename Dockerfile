@@ -1,4 +1,4 @@
-FROM sbubmi/test_segmentation:latest
+FROM sbubmi/pathomics_analysis:1.0.0rc0
 
 RUN yum makecache fast 
 
