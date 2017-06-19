@@ -28,6 +28,8 @@ RUN git clone https://github.com/camicroscope/DynamicServices.git && \
 
 WORKDIR /tmp/DynamicServices/
 
-ENV LD_LIBRARY_PATH=/usr/local/lib:/usr/local/lib64:$LD_LIBRARY_PATH
 
+ENV LD_LIBRARY_PATH=/usr/local/lib:/usr/local/lib64:$LD_LIBRARY_PATH
+COPY sample_config.json /tmp/DynamicServices/configs/config.json
+COPY sample_apikey.json /tmp/DynamicServices/configs/sample_apikey.json
 CMD ["/bin/bash", "/tmp/DynamicServices/run.sh"]
