@@ -5,7 +5,7 @@ sed -i -e "s/ffffffff-ffff-ffff-ffff-ffffffffffff/$apikey/g" /tmp/DynamicService
 if [ -z "$QUIP_JOBS" ]; then
 	sed -i 's/\@QUIP_JOBS/\$QUIP_JOBS/g' /tmp/DynamicServices/configs/config.json 
 	sed -i 's/\@QUIP_OSS/\$QUIP_OSS/g' /tmp/DynamicServices/configs/config.json
-	sed -i 's/\@QUIP_DATA/\$QUIP_DATA/g' /tmp/DynamicServices/configs/config.json
+	sed -i 's/\@QUIP_DATA/\$QUIP_BINDAAS/g' /tmp/DynamicServices/configs/config.json
 	sed -i 's/\@QUIP_LOADER/\$QUIP_LOADER/g' /tmp/DynamicServices/configs/config.json
 fi
 	
