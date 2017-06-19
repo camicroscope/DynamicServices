@@ -28,7 +28,7 @@ RUN git clone -b 1.0.0rc0 https://github.com/camicroscope/DynamicServices.git &&
 
 WORKDIR /tmp/DynamicServices/
 
-ENV LD_LIBRARY_PATH=/usr/local/lib:/usr/local/lib64:$LD_LIBRARY_PATH
+
 
 COPY trusted-app-client-0.0.1-jar-with-dependencies.jar /tmp/DynamicServices/
 COPY createUser.py /tmp/DynamicServices/
@@ -36,5 +36,10 @@ COPY createUser.py /tmp/DynamicServices/
 RUN yum -y install java-1.7.0-openjdk
 ENV JAVA_HOME /usr/lib/jvm/java-7-openjdk-amd64/
 ENV PATH $JAVA_HOME/bin:$PATH
+
+
+ENV LD_LIBRARY_PATH=/usr/local/lib:/usr/local/lib64:$LD_LIBRARY_PATH
+COPY sample_config.json /tmp/DynamicServices/configs/config.json
+COPY sample_apikey.json /tmp/DynamicServices/configs/sample_apikey.json
 
 CMD ["/bin/bash", "/tmp/DynamicServices/run.sh"]
