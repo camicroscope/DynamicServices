@@ -3,14 +3,14 @@
     {
         "redis":
         {
-            "host": "QUIP_JOBS",
+            "host": "camicroscope-jobs",
             "port": "6379",
             "channel": "q:events"
         },
         "kue":
         {
-            "host": "QUIP_JOBS",
-            "port": "1337",
+            "host": "camicroscope-jobs",
+            "port": "3000",
             "path": "/job/"
         }
     },
@@ -18,28 +18,28 @@
     {
         "location":
         {
-            "host" : "QUIP_BINDAAS" ,
+            "host" : "camicroscope-bindaas" ,
             "port" : "9099" ,
-            "path" : "/services/TCGA/GeoJSONMetaData/query/getFileLocationByIID"
+            "path" : "/services/Camicroscope_DataLoader/DataLoader/query/getFileLocationByIID"
         },
         "imageServer":
         {
-            "url":"QUIP_OSS",
+            "url":"camicroscope-oss",
             "format":"JPEG"
         },
         "api_key_file": "sample_apikey.json"
-    },        
+    },
     "annotations":
     {
         "server":
         {
-            "host": "QUIP_LOADER",
-            "port": "6000",
-            "path": "/submitMaskOrder"
+            "host": "camicroscope-uaimloader",
+            "port": "3001",
+            "path": "/submitZipOrder"
         },
         "redis":
         {
-            "host": "QUIP_LOADER",
+            "host": "camicroscope-uaimloader",
             "port": "6379",
             "channel": "q:events"
         }
