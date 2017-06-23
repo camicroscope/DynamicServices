@@ -1,6 +1,6 @@
 sleep 60
 apikey=$(python createUser.py dynamic@quip)
-sed -i -e "s/ffffffff-ffff-ffff-ffff-ffffffffffff/$apikey/g" /tmp/DynamicServices/configs/sample_apikey.json
+sed -i -e "s/ffffffff-ffff-ffff-ffff-ffffffffffff/$apikey/g" /tmp/DynamicServices/sample_apikey.json
 
 
 sed -i "s@QUIP_JOBS@$QUIP_JOBS@g" /tmp/DynamicServices/configs/config.json 
