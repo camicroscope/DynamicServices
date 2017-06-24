@@ -4,7 +4,7 @@ import pipes
 import sys
 
 user = "dynamic@quip"
-host = os.environ['QUIP_BINDAAS']
+host = os.environ['camicroscope-bindaas']
 if(len(sys.argv) > 1):
         user = sys.argv[1]
 
