@@ -24,7 +24,7 @@
         },
         "imageServer":
         {
-            "url":"camicroscope-oss",
+            "url":"camicroscope-oss:5000",
             "format":"JPEG"
         },
         "api_key_file": "sample_apikey.json"
