@@ -167,8 +167,8 @@ void CaMicroscopeService::processOrder(unique_ptr<Order> order) {
         std::cout << "\n\nFailed to parse jsonText " << reader.getFormattedErrorMessages();
         //return false;
     }
-    string loc = values[0].get("file-location", "").asString();
-    cout << "\nfile-location:" << loc;
+    string loc = values[0].get("filename", "").asString();
+    cout << "\nfilename:" << loc;
 
     string cmd;
     string imName = order->getOrderId() + "." + order->getInputFormat();
