@@ -1,6 +1,6 @@
-FROM sbubmi/pathomics_analysis:latest 
+FROM sbubmi/pathomics_analysis:latest
 
-RUN yum makecache fast 
+RUN yum makecache fast
 
 RUN yum -y install curl-devel jsoncpp-devel libev-devel && \
     ln -s /usr/include/jsoncpp/json /usr/include/json
@@ -8,7 +8,7 @@ RUN yum -y install curl-devel jsoncpp-devel libev-devel && \
 WORKDIR /tmp/
 
 RUN git clone https://github.com/redis/hiredis.git && \
-    cd hiredis && make -j4 && make install 
+    cd hiredis && make -j4 && make install
 
 WORKDIR /tmp/
 
@@ -16,15 +16,15 @@ RUN git clone https://github.com/hmartiro/redox.git && \
     cd redox && \
     mkdir build && cd build && \
     cmake ../ && \
-    make -j4 && make install 
+    make -j4 && make install
 
 WORKDIR /tmp/
 
-RUN git clone -b release https://github.com/camicroscope/DynamicServices.git && \
+RUN git clone -b master https://github.com/camicroscope/DynamicServices.git && \
     cd DynamicServices/ && \
     mkdir images && \
-    mkdir configs && \ 
-    mkdir obj && make -j4 
+    mkdir configs && \
+    mkdir obj && make -j4
 
 WORKDIR /tmp/DynamicServices/
 
