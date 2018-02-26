@@ -189,11 +189,20 @@ void CaMicroscopeService::processOrder(unique_ptr<Order> order) {
 		+ " -a " + order->getAnalysisId() + " -s " + to_string(order->getX()) + "," 
                 + to_string(order->getY())  
 		+ " -b " + to_string(order->getW()) + "," + to_string(order->getH())  
-		+ " -d " + to_string(order->getW()) + "," + to_string(order->getH());
+		+ " -d " + to_string(order->getW()) + "," + to_string(order->getH())
+		+ " -r " + order->getParamR() 
+		+ " -w " + order->getParamW()
+		+ " -l " + order->getParamL()
+		+ " -u " + order->getParamU()
+		+ " -k " + order->getParamK()
+		+ " -m " + order->getParamM()
+		+ " -j " + order->getParamJ();
+	/*
       for (auto i=0;i<order->getNumAuxArgs();i++) {
 	cmd = cmd + " -" + order->getAuxArg(i).first
 		+ " " + order->getAuxArg(i).second;
       }
+	*/
     }
     else {
 	cout << "\nOnly source:image_server supported currently" <<endl; 
