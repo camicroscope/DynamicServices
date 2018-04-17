@@ -3,13 +3,13 @@
     {
         "redis":
         {
-            "host": "localhost",
+            "host": "QUIP_JOBS",
             "port": "6379",
             "channel": "q:events"
         },
         "kue":
         {
-            "host": "localhost",
+            "host": "QUIP_JOBS",
             "port": "1337",
             "path": "/job/"
         }
@@ -18,13 +18,13 @@
     {
         "location":
         {
-            "host" : "localhost" ,
+            "host" : "QUIP_BINDAAS" ,
             "port" : "9099" ,
             "path" : "/services/TCGA/GeoJSONMetaData/query/getFileLocationByIID"
         },
         "imageServer":
         {
-            "url":"localhost",
+            "url":"QUIP_OSS",
             "format":"JPEG"
         },
         "api_key_file": "sample_apikey.json"
@@ -33,13 +33,13 @@
     {
         "server":
         {
-            "host": "localhost",
+            "host": "QUIP_LOADER",
             "port": "6000",
             "path": "/submitMaskOrder"
         },
         "redis":
         {
-            "host": "localhost",
+            "host": "QUIP_LOADER",
             "port": "6379",
             "channel": "q:events"
         }
