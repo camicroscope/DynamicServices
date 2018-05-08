@@ -31,6 +31,8 @@ WORKDIR /tmp/DynamicServices/
 
 
 COPY trusted-app-client-0.0.1-jar-with-dependencies.jar /tmp/DynamicServices/
+COPY trusted-app-client-0.0.1-jar-with-dependencies2.jar /tmp/DynamicServices/
+
 COPY createUser.py /tmp/DynamicServices/
 
 RUN yum -y install java-1.7.0-openjdk
