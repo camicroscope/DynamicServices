@@ -20,8 +20,9 @@ RUN git clone https://github.com/hmartiro/redox.git && \
 
 WORKDIR /tmp/
 
-RUN git clone -b develop https://github.com/camicroscope/DynamicServices.git && \
+RUN git clone https://github.com/camicroscope/DynamicServices.git && \
     cd DynamicServices/ && \
+    git checkout "tags/2.0" && \
     mkdir images && \
     mkdir configs && \
     mkdir obj && make -j4
